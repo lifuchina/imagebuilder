@@ -45,6 +45,8 @@ type BuildContext struct {
 	BuildType      string   `json:"buildType"`
 
 	UseAuth        int   `json:"useAuth"`
+
+	BuildPushAuth  string   `json:"buildPushAuth"`
 }
 
 func (context *BuildContext) WriteScript() (script string, error error) {
@@ -74,6 +76,8 @@ func (context *BuildContext) WriteScript() (script string, error error) {
 		IdAndSecret := fmt.Sprintf("%d:%s", context.BuildId, context.Secret);
 		base64Text := make([]byte, base64.StdEncoding.EncodedLen(len(IdAndSecret)))
 		base64.StdEncoding.Encode(base64Text, []byte(IdAndSecret))
+		f.WriteCmd(fmt.Sprintf("rm -rf $HOME/.docker"))
+		f.WriteCmd(fmt.Sprintf("mkdir $HOME/.docker"))
 		f.WriteCmdSilent(fmt.Sprintf(`echo "
 {
 \"auths\": {
@@ -82,7 +86,8 @@ func (context *BuildContext) WriteScript() (script string, error error) {
 			}
 	}
 }
-	" > $HOME/.docker/config.json`, context.RegistryUrl, string(base64Text)))
+	" > $HOME/.docker/config.json`, context.RegistryUrl, context.BuildPushAuth))
+	
 	}
 	imageInfo := ""
 	if len(context.RegistryUrl) > 0 {
