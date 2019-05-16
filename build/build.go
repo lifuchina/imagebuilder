@@ -209,9 +209,10 @@ func RunOnType(codeType string) {
 		dockerfilePath := os.Getenv("DOCKERFILE_PATH")
 		buildType := os.Getenv("BUILD_TYPE")
 		useAuth, _ := strconv.Atoi(os.Getenv("USE_AUTH"))
+		buildPushAuth := os.Getenv("BUILD_PUSH_AUTH")
 
 		buildContext := &buildcontext.BuildContext{idrsa, codeUrl, buildId, commitId, imageName, imageTag, registryUrl, hasDockerfile,
-			secret, dockerfileUrl, compilefileUrl, buildPath, dockerfilePath, codeType, buildType, useAuth}
+			secret, dockerfileUrl, compilefileUrl, buildPath, dockerfilePath, codeType, buildType, useAuth, buildPushAuth}
 		script, err := buildContext.WriteScript()
 		bs := &buildStatus{}
 		bc, _ := json.Marshal(buildContext)
